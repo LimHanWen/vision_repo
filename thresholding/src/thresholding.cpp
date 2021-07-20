@@ -32,7 +32,7 @@ static void threshold_demo( int trackbarPos, void* userData ) {
 }
 int main( int argc, char** argv ) {
     // Store the full path to the image file in a string
-    std::string imageName("/home/mtrn4230/mp_repos/MTRN4230-personal/thresholding/src/fruit.jpeg");
+    std::string imageName("/home/mtrn4230/mp_repos/vision_repo/thresholding/src/coins.jpeg");
 
     // read in the image defined above and store into a Matrix (cv::Mat data type)
     cv::Mat original_colour_image  = cv::imread(imageName, cv::IMREAD_COLOR ); // Load an image
