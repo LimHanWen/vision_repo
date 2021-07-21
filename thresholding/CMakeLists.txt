@@ -13,5 +13,5 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
 )
-add_executable(thresholding src/vision_recognition.cpp)
+add_executable(thresholding src/perspective_transform.cpp)
 target_link_libraries(thresholding ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})

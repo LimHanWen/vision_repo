@@ -1,0 +1,9 @@
+<launch>
+  <node
+    pkg="thresholding"
+    type="vision_recognition.py"
+    name="thresholding"
+    output="screen"
+  />
+
+</launch> 

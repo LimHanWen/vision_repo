@@ -21,7 +21,7 @@ def Threshold_Demo(val):
     cv.imshow(window_name, dst)
 
 
-src = cv.imread("/home/mtrn4230/mp_repos/vision_repo/thresholding/src/SolitaireCorner1.jpg")
+src = cv.imread("/home/mtrn4230/mp_repos/vision_repo/thresholding/src/fruit.jpeg")
 if src is None:
     print('Could not open or find the image: ', args.input)
     exit(0)
