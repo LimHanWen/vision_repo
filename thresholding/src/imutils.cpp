@@ -1,6 +1,3 @@
-//
-// Created by mohamad on 5/8/17.
-//
 #include "imutils.h"
 
 using namespace cv;
