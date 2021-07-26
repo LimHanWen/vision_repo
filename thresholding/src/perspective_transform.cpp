@@ -6,11 +6,13 @@
 // Additional libraries
 #include <opencv2/core/mat.hpp>
 
+/*
 int threshold_value = 0;
 int threshold_type = 3;
 int const max_value = 255;
 int const max_type = 4;
 int const max_binary_value = 255;
+*/
 
 cv::Mat original_grey_image, thresholded_image, thresholded_image2, original_hsv_image, mask_image, opened_image, blur_image, binary_image;
 std::string window_name("Threshold Demo");
@@ -48,12 +50,12 @@ int main( int argc, char** argv ) {
     }
 
     //cv::cvtColor( original_colour_image, original_grey_image, cv::COLOR_BGR2GRAY ); // Convert the image to Gray
-    cv::namedWindow( window_name, cv::WINDOW_AUTOSIZE ); // Create a window to display results
+    cv::namedWindow( window_name, cv::WINDOW_FREERATIO ); // Create a window to display results
 
     // Convert to HSV format and color threshold
     cv::cvtColor(original_colour_image, original_hsv_image, cv::COLOR_BGR2HSV);
     cv::inRange(original_hsv_image, cv::Scalar(hMin,sMin,vMin), cv::Scalar(hMax,sMax,vMax), mask_image);
-    cv::imshow( window_name, mask_image );
+    cv::imshow( window_name, original_colour_image );
 
     // Perform Opening to remove salt noise
     // Create a structuring element
@@ -64,25 +66,27 @@ int main( int argc, char** argv ) {
     cv::morphologyEx(mask_image, opened_image, cv::MORPH_OPEN, open_kernel, anchor, 1);
 
     // Show opened image in new window
-    cv::namedWindow( open_window, cv::WINDOW_AUTOSIZE );
-    cv::imshow( open_window, opened_image );
-
+    cv::namedWindow( open_window, cv::WINDOW_FREERATIO );
+    //cv::imshow( open_window, opened_image );
+    cv::imshow ( open_window, original_hsv_image);
     
     // Perform blurring to opened image
     cv::GaussianBlur(opened_image, blur_image, cv::Size(5,5), 0);
-    cv::namedWindow( blur_window, cv::WINDOW_AUTOSIZE);
-    cv::imshow( blur_window, blur_image);
+    //cv::namedWindow( blur_window, cv::WINDOW_AUTOSIZE);
+    //cv::imshow( blur_window, blur_image);
     
 
     // Perform binary threshold on blurred image
     cv::threshold(blur_image, binary_image, 0, 255, cv::THRESH_BINARY);
-    cv::namedWindow( test_window, cv::WINDOW_AUTOSIZE);
+    cv::namedWindow( test_window, cv::WINDOW_FREERATIO);
     cv::imshow( test_window, binary_image);
 
     // Find contours of the cornerstones
     //cv::OutputArrayOfArrays contour_array = cv::OutputArrayOfArrays(0);
     std::vector<std::vector<cv::Point> > contour_array; //create Output array of array vector for contour points storage
     cv::findContours(binary_image, contour_array, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+    //sorted_contour_array = 
     
 
     // wait for a keypress before exiting - if you don't have this line, the program will end!
