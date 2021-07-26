@@ -6,6 +6,11 @@
 // Additional libraries
 #include <opencv2/core/mat.hpp>
 
+// For finding moments/centroid
+//cv::Point
+cv::Vec4i hierarchy;
+
+
 /*
 int threshold_value = 0;
 int threshold_type = 3;
@@ -85,9 +90,17 @@ int main( int argc, char** argv ) {
     //cv::OutputArrayOfArrays contour_array = cv::OutputArrayOfArrays(0);
     std::vector<std::vector<cv::Point> > contour_array; //create Output array of array vector for contour points storage
     cv::findContours(binary_image, contour_array, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-
-    //sorted_contour_array = 
     
+
+    // Get moments of cornerstone blobs
+    vector<Moments> mu(contours.size());
+    for ( int i = 0; i < contours.size(); i++)
+    {
+        mu[i] = moments( contours[i], flase );
+    }
+*/
+    // Get the centroid of cornerstone blobs
+
 
     // wait for a keypress before exiting - if you don't have this line, the program will end!
     cv::waitKey();
