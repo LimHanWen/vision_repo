@@ -7,8 +7,8 @@
 #include <opencv2/core/mat.hpp>
 
 // For finding moments/centroid
-//cv::Point
-cv::Vec4i hierarchy;
+std::vector<std::vector<cv::Point>> contours;
+std::vector<cv::Vec4i> hierarchy;
 
 
 /*
@@ -24,14 +24,10 @@ std::string window_name("Threshold Demo");
 std::string open_window("Opening noise reduction");
 std::string blur_window("Blurred image");
 std::string test_window("Test window");
+std::string pt_window("Transformed window");
 std::string trackbar_type("Type: \n 0: Binary \n 1: Binary Inverted \n 2: Truncate \n 3: To Zero \n 4: To Zero Inverted");
 std::string trackbar_value("Value");
 
-/*
-// Initialize HSV min/max values
-hMin = sMin = vMin = hMax = sMax = vMax = 0;
-phMin = psMin = pvMin = phMax = psMax = pvMax = 0;
-*/
 
 // Set threshold values for cornerstones
 int hMin = 140;
@@ -87,19 +83,96 @@ int main( int argc, char** argv ) {
     cv::imshow( test_window, binary_image);
 
     // Find contours of the cornerstones
-    //cv::OutputArrayOfArrays contour_array = cv::OutputArrayOfArrays(0);
     std::vector<std::vector<cv::Point> > contour_array; //create Output array of array vector for contour points storage
-    cv::findContours(binary_image, contour_array, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    cv::findContours(binary_image, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE, cv::Point(0,0));
     
-
     // Get moments of cornerstone blobs
-    vector<Moments> mu(contours.size());
+    std::vector<cv::Moments> mu(contours.size());
     for ( int i = 0; i < contours.size(); i++)
     {
-        mu[i] = moments( contours[i], flase );
+        mu[i] = moments( contours[i], false );
     }
-*/
+
     // Get the centroid of cornerstone blobs
+    std::vector<cv::Point2f> mc (contours.size());
+    for ( int i = 0; i < contours.size(); i++)
+    {
+        mc[i] = cv::Point2f( mu[i].m10/mu[i].m00 , mu[i].m01/mu[i].m00 );
+    }
+
+    // Iterate and rearrange cornerstone centroid array
+    std::vector<cv::Point2f> mc_arranged (contours.size());
+    for ( int i = 0; i < contours.size(); i++)
+    {
+        // Get x and y values for centroids
+        float xval = mc[i].x;
+        float yval = mc[i].y;
+
+        // Top Left
+        if (xval < 710)
+        {
+            if (yval < 432)
+            {
+                mc_arranged[0].x = xval;
+                mc_arranged[0].y = yval;
+            }
+        }
+
+        // Top Right
+        if (xval > 710)
+        {
+            if (yval < 432)
+            {
+                mc_arranged[1].x = xval;
+                mc_arranged[1].y = yval;
+            }
+        }
+
+        // Bottom Left
+        if (xval < 710)
+        {
+            if (yval > 432)
+            {
+                mc_arranged[2].x = xval;
+                mc_arranged[2].y = yval;
+            }
+        }
+
+        // Bottom Right
+        if (xval > 710)
+        {
+            if (yval > 432)
+            {
+                mc_arranged[3].x = xval;
+                mc_arranged[3].y = yval;
+            }
+        }
+    }
+
+    // Perspective Transform
+    // Transformation points
+    std::vector<cv::Point2f> pt_array1 (contours.size());
+    std::vector<cv::Point2f> pt_array2 (contours.size());
+
+    pt_array1 = mc_arranged;
+    pt_array2 = {{0,0},{1420,0},{0,864},{1420,864}};
+
+    std::cout << pt_array1;
+    std::cout << "\n";
+    std::cout << pt_array2;
+    std::cout << "\n";
+
+    // Get Homography matrix
+    cv::Mat H_matrix;
+    H_matrix = cv::getPerspectiveTransform(pt_array1, pt_array2);
+
+    // Perform warping of perspective transform
+    cv::Mat pt_image;
+    cv::warpPerspective(original_colour_image, pt_image, H_matrix, cv::Size(1420,864));
+
+    // Display transformed image
+    cv::namedWindow( pt_window, cv::WINDOW_FREERATIO);
+    cv::imshow( pt_window, pt_image);
 
 
     // wait for a keypress before exiting - if you don't have this line, the program will end!
